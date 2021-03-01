@@ -1,35 +1,25 @@
 { stdenv
 , lib
-, mkNode
+, mkNodeFod
 , nodejs-14_x
-, makeWrapper
 , hubsSrc
 }:
 
-let
-  extraPath = [
+mkNodeFod {
+  pname = "hubs";
+  version = "unstable";
 
-  ];
-in
-mkNode {
-  root = hubsSrc.hubs;
-  nodejs = nodejs-14_x;
-  production = false;
-  packageLock = "${hubsSrc.hubs}/package-lock.json";
-} {
-  buildInputs = extraPath ++ [
+  node = nodejs-14_x;
 
-  ];
+  depsHash = "sha256-X2rJ710dFwBy4djs4ZwXYGSy5TmKT9WumNvLxxjGcc4=";
 
-  inherit extraPath;
+  src = "${hubsSrc.hubs}";
 
-  nativeBuildInputs = [
-    makeWrapper
-  ];
+  buildPhase = ''
+    npm run build
+  '';
 
-  postBuild = ''
-    for bin in $out/bin/*; do
-      wrapProgram $bin --prefix PATH : ${lib.makeBinPath extraPath}
-    done
+  installPhase = ''
+    mv dist $out
   '';
 }

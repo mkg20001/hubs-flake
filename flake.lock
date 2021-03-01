@@ -1,40 +1,40 @@
 {
   "nodes": {
-    "nix-node-package": {
+    "nix-node-fod": {
       "locked": {
-        "lastModified": 1614279320,
-        "narHash": "sha256-lu2vBvgkpXcwQ7CVbUSuZWE+nMji1L89ayCn6CxTTRg=",
+        "lastModified": 1614601394,
+        "narHash": "sha256-IRid1SELB6nhN/sQmJo2cJrOcuOyF2QPhoxEcXdoUN4=",
         "owner": "mkg20001",
-        "repo": "nix-node-package",
-        "rev": "deb55467aa1377adac0e9f1463efd14d499f3307",
+        "repo": "nix-node-fod",
+        "rev": "3df4a138c2d355503d74863b7fb05c7643cbb3d3",
         "type": "github"
       },
       "original": {
         "owner": "mkg20001",
         "ref": "master",
-        "repo": "nix-node-package",
+        "repo": "nix-node-fod",
         "type": "github"
       }
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1614586301,
-        "narHash": "sha256-iCtS752zNpyxSEB5ecfW3Hg9qHSQS1HnExGWnVX3EYQ=",
+        "lastModified": 1614588159,
+        "narHash": "sha256-0vpUVoWdZHHP7phY5+oXFKFyBhoNiVOv5VGAss9OgCE=",
         "owner": "mkg20001",
         "repo": "nixpkgs",
-        "rev": "1c6d837da1f9aa63714d41f9067212504f9ad785",
+        "rev": "aac1960fee0f7eafa960d0133b3f240b56506c2c",
         "type": "github"
       },
       "original": {
         "owner": "mkg20001",
-        "ref": "fix_build_mix",
+        "ref": "r_fix_build_mix",
         "repo": "nixpkgs",
         "type": "github"
       }
     },
     "root": {
       "inputs": {
-        "nix-node-package": "nix-node-package",
+        "nix-node-fod": "nix-node-fod",
         "nixpkgs": "nixpkgs"
       }
     }

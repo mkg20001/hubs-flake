@@ -1,5 +1,5 @@
-nix-node-package: final: prev: {
-  mkNode = nix-node-package.lib.nix-node-package prev;
+nix-node-fod: final: prev: {
+  mkNodeFod = nix-node-fod.lib.nix-node-fod prev;
   hubsSrc = prev.callPackage ./src.nix { };
   hubs = prev.callPackage ./hubs.nix { };
   hubs-admin = prev.callPackage ./hubs-admin.nix { };
