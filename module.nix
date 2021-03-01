@@ -4,6 +4,7 @@ with lib;
 
 let
   cfg = config.services.hubs;
+  reticulum = pkgs.reticulum;
 in
 {
   options = {
@@ -17,9 +18,20 @@ in
   };
 
   config = mkIf (cfg.enable) {
-    services.postgres = {
+    services.postgresql = {
       enable = true;
       # TODO: setup recticulum db
+
+      ensureUsers = [{
+        name = "hubs";
+        ensurePermissions = { "ret_prod.*" = "ALL PRIVILEGES"; };
+      }];
+      ensureDatabases = [ "ret_prod" ];
+
+    };
+
+    users.users.hubs = {
+      uid = config.ids.uids.hubs;
     };
 
     systemd.services.reticulum = with pkgs; {
@@ -29,6 +41,7 @@ in
       description = "Reticulum (hubs backend)";
       serviceConfig = {
         Type = "exec";
+        User = "hubs";
         DynamicUser = true;
         WorkingDirectory = cfg.workingDirectory;
         # Implied by DynamicUser, but just to emphasize due to RELEASE_TMP
@@ -61,5 +74,8 @@ in
     };
 
     environment.systemPackages = [ release ];
+
+    ids.gids.hubs = 330;
+    ids.uids.hubs = 330;
   };
 }

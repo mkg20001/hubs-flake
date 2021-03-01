@@ -16,7 +16,7 @@ let
   erlang = beam.packages.erlang;
 in
 erlang.buildMix ({
-  name = "recitculum";
+  name = "reticulum";
   version = "unstable";
 
   src = hubsSrc.reticulum;
