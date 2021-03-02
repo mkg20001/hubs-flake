@@ -2,8 +2,6 @@ lib:
 
 with lib;
 
-
-
 let
   escape = str: let
     out = lib.escape ["\"" "\\\""] str;

@@ -17,7 +17,7 @@ in
       enable = mkEnableOption "Janus WebRTC";
       config = mkOption {
         description = "Janus Options";
-        type = types.attrs;
+        type = types.attrsOf (types.attrs);
       };
       # plugins = listOf packages
     };
@@ -28,25 +28,29 @@ in
       uid = config.ids.uids.janus;
     };
 
-    environment.etc."janus/janus.jcfg".text = jcfgStr cfg.config;
+    environment.etc = mapAttrs' (key: value: nameValuePair ("janus/${key}.jcfg") ({
+      text = jcfgStr value;
+      })) cfg.config;
 
     services.janus.config = {
-      # defaults from ${janus}/etc/janus.jcfg.sample
-      general = {
-        configs_folder = "/etc/janus";
-        plugins_folder = "${combined}/lib/janus/plugins";
-        transports_folder = "${combined}/lib/janus/transports";
-        events_folder = "${combined}/lib/janus/events";
-        loggers_folder = "${combined}/lib/janus/loggers";
+      janus = {
+        # defaults from ${janus}/etc/janus.jcfg.sample
+        general = {
+          configs_folder = "/etc/janus";
+          plugins_folder = "${combined}/lib/janus/plugins";
+          transports_folder = "${combined}/lib/janus/transports";
+          events_folder = "${combined}/lib/janus/events";
+          loggers_folder = "${combined}/lib/janus/loggers";
 
-        debug_level = 4;
+          debug_level = 4;
 
-        protected_folders = ["/"];
-      };
+          protected_folders = ["/"];
+        };
 
-      nat = {
-        nice_debug = false;
-        ice_ignore_list = "vmnet";
+        nat = {
+          nice_debug = false;
+          ice_ignore_list = "vmnet";
+        };
       };
     };
 
