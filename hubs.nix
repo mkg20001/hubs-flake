@@ -31,6 +31,8 @@ mkNodeFod {
   '';
 
   installPhase = ''
+    mkdir -p $out
+    touch $out/void
     mv dist $client
     mv admin/dist $admin
   '';

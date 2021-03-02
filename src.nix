@@ -15,4 +15,12 @@
     sha256 = "U5yBhO99PNRYeG2k40uisSD8TtCeSnoLPJjskyAz/JA=";
     fetchSubmodules = true;
   };
+  # nix-prefetch-github mozilla Spoke --nix
+  spoke = fetchFromGitHub {
+    owner = "mozilla";
+    repo = "Spoke";
+    rev = "213b909a4d795ac81cd9fdb7061efcc57c82b801";
+    sha256 = "J/RRP2sNh12ghDe4t8X9cat1x9qlMKTWbHGgk5ahbSs=";
+    fetchSubmodules = true;
+  };
 }

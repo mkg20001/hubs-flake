@@ -66,6 +66,8 @@ in
         ExecReload = ''
           ${reticulum}/bin/ret restart
         '';
+      };
+      unitConfig = {
         Restart = "on-failure";
         RestartSec = 5;
         StartLimitBurst = 3;

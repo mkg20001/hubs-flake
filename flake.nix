@@ -18,7 +18,7 @@
       defaultPackage = forAllSystems (system: (import nixpkgs {
         inherit system;
         overlays = [ self.overlay ];
-      }).hubs); #recticulum);
+      }).spoke); #recticulum);
 
       nixosModules.hubs = import ./module.nix;
 

@@ -1,6 +1,5 @@
 { stdenv
 , lib
-, mkNode
 , nodejs-14_x
 , makeWrapper
 , hubsSrc
