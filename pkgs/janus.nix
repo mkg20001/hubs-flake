@@ -26,7 +26,6 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     curl
-    curl.dev
     glib
     libnice
     srtp
@@ -36,6 +35,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     autoreconfHook
+    curl.dev
     m4
     pkg-config
     gengetopt

@@ -20,7 +20,8 @@
         overlays = [ self.overlay ];
       }).janus); #recticulum);
 
-      nixosModules.hubs = import ./module.nix;
+      nixosModules.hubs = import ./modules/hubs.nix;
+      nixosModules.janus = import ./modules/janus.nix;
 
     };
 }
