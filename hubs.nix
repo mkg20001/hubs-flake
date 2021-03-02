@@ -11,15 +11,27 @@ mkNodeFod {
 
   node = nodejs-14_x;
 
-  depsSha256 = "xRTetJBJ/NYl+yQlxYRNcJT1JkbEEK0r8TC3RLpOMmI=";
+  depsHash = "sha256-ao5Ay+nfdtbviOaQnSdp4wl/1o2UTR5jwl4qdrGoDk0=";
 
-  src = "${hubsSrc.hubs}";
+  src = hubsSrc.hubs;
+
+  outputs = [ "out" "client" "admin" ];
+
+  depsAttrs.preInstall = ''
+    pushd admin
+    HOME=/tmp npm ci
+    popd
+  '';
 
   buildPhase = ''
     npm run build
+    pushd admin
+    npm run build
+    popd
   '';
 
   installPhase = ''
-    mv dist $out
+    mv dist $client
+    mv admin/dist $admin
   '';
 }
