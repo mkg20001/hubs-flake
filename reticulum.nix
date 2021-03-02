@@ -11,10 +11,8 @@ let
   extraPath = [
 
   ];
-
-  erlang = beam.packages.erlang;
 in
-erlang.buildMix ({
+beam.packages.erlang.buildMix ({
   name = "reticulum";
   version = "unstable";
 
@@ -26,26 +24,7 @@ erlang.buildMix ({
     git
   ];
 
-  /* configurePhase = ''
-    type -Pf mix
-    exit 2
-  ''; */
-
-  /* installPhase = ''
-    mix ecto.create --no-deps-check
-  ''; */
-
-  /* buildInputs = extraPath ++ [
-
-  ];
-
-  inherit extraPath;
-
-  nativeBuildInputs = [
-    makeWrapper
-  ];
-
-  postBuild = ''
+  /* postBuild = ''
     for bin in $out/bin/*; do
       wrapProgram $bin --prefix PATH : ${lib.makeBinPath extraPath}
     done
