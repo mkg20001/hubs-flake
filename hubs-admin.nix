@@ -1,23 +1,25 @@
 { stdenv
 , lib
-, mkNode
+, mkNodeFod
 , nodejs-14_x
 , hubsSrc
 }:
 
-mkNode {
-  root = "${hubsSrc.hubs}/admin";
-  nodejs = nodejs-14_x;
-  production = false;
-  packageLock = "${hubsSrc.hubs}/admin/package-lock.json";
-} {
+mkNodeFod {
   pname = "hubs-admin";
+  version = "unstable";
+
+  node = nodejs-14_x;
+
+  depsHash = "sha256-Uv8x5UoL+eqYiXB2S43XCZGviyL04vYjvYSzhJ2a1kg=";
+
+  src = "${hubsSrc.hubs}/admin";
 
   buildPhase = ''
     npm run build
   '';
 
-  nodeInstallPhase = ''
+  installPhase = ''
     mv dist $out
   '';
 }

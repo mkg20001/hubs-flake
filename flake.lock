@@ -2,11 +2,11 @@
   "nodes": {
     "nix-node-fod": {
       "locked": {
-        "lastModified": 1614601394,
-        "narHash": "sha256-IRid1SELB6nhN/sQmJo2cJrOcuOyF2QPhoxEcXdoUN4=",
+        "lastModified": 1614656543,
+        "narHash": "sha256-k4nDEUvvO6ftVGRC4YuMO36IBZUx/zwRVXUKZ4uzhLQ=",
         "owner": "mkg20001",
         "repo": "nix-node-fod",
-        "rev": "3df4a138c2d355503d74863b7fb05c7643cbb3d3",
+        "rev": "f40e158315bcc4a960d49eeb0708fb4eda9bc7a9",
         "type": "github"
       },
       "original": {
