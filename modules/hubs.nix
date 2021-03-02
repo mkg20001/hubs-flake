@@ -7,6 +7,10 @@ let
   reticulum = pkgs.reticulum;
 in
 {
+  imports = [
+    ./janus.nix
+  ];
+
   options = {
     services.hubs = {
       enable = mkEnableOption "Mozilla Hubs";
@@ -28,6 +32,10 @@ in
       }];
       ensureDatabases = [ "ret_prod" ];
 
+    };
+
+    services.janus = {
+      enable = true;
     };
 
     users.users.hubs = {
