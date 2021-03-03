@@ -52,6 +52,28 @@ in
           ice_ignore_list = "vmnet";
         };
       };
+
+      "janus.eventhandler.gelfevh" = {};
+      "janus.eventhandler.sampleevh" = {};
+
+      "janus.plugin.echotest" = {};
+      "janus.plugin.nosip" = {};
+      "janus.plugin.recordplay" = {
+        general.path = "/var/janus/recordings";
+      };
+      "janus.plugin.streaming" = {};
+      "janus.plugin.textroom" = {};
+      "janus.plugin.videocall" = {};
+      "janus.plugin.voicemail" = {};
+      "janus.plugin.videoroom" = {};
+
+      "janus.transport.pfunix" = {
+        general = {
+          enabled = true;
+          json = "indented";
+          path = "/run/janus.sock";
+        };
+      };
     };
 
     systemd.services.janus = with pkgs; {

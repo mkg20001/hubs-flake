@@ -10,6 +10,7 @@
 , jansson
 , libconfig
 , gengetopt
+, libogg
 }:
 
 stdenv.mkDerivation rec {
@@ -31,6 +32,7 @@ stdenv.mkDerivation rec {
     srtp
     libconfig
     jansson
+    libogg
   ];
 
   nativeBuildInputs = [
