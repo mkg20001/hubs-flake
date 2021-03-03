@@ -5,6 +5,7 @@ with lib;
 let
   cfg = config.services.hubs;
   reticulum = pkgs.reticulum;
+  configJSON = builtins.toJSON cfg.config;
 in
 {
   imports = [
@@ -18,19 +19,55 @@ in
         type = types.str;
         default = "/var/reticulum";
       };
+
+      config = mkOption {
+        type = types.attrs;
+      };
+
+      domain = mkOption {
+        type = types.str;
+        description = "Set domain for hubs services";
+        default = "hubs.local";
+      };
+
+      enableNginx = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Setup nginx to serve hubs services";
+      };
+
+      enableAcme = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Enable Let's Encrypt SSL Certificates";
+      };
+
+      enableAcmeNginx = mkOption {
+        type = types.bool;
+        default = cfg.enableAcme && cfg.enableNginx;
+        description = "Enable Let's Encrypt SSL Certificates for nginx (requires enableAcme & enableNginx)";
+      };
     };
   };
 
   config = mkIf (cfg.enable) {
+
+    services.nginx = mkIf (cfg.enableNginx) {
+      enable = true;
+    };
+
+    services.hubs.config = {
+    };
+
     services.postgresql = {
       enable = true;
       # TODO: setup reticulum db
 
       ensureUsers = [{
         name = "hubs";
-        ensurePermissions = { "DATABASE ret_prod" = "ALL PRIVILEGES"; };
+        ensurePermissions = { "DATABASE ret_production" = "ALL PRIVILEGES"; };
       }];
-      ensureDatabases = [ "ret_prod" ];
+      ensureDatabases = [ "ret_production" ];
 
     };
 
@@ -82,7 +119,7 @@ in
         StartLimitInterval = 10;
       };
       # needed for disksup do have sh available
-      path = [ pkgs.bash ];
+      path = [ pkgs.bash pkgs.gawk ];
     };
 
     environment.systemPackages = [ reticulum ];
