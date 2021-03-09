@@ -11,7 +11,7 @@ mkNodeFod {
 
   node = nodejs-14_x;
 
-  depsHash = "sha256-ao5Ay+nfdtbviOaQnSdp4wl/1o2UTR5jwl4qdrGoDk0=";
+  depsHash = "sha256-d1DMMnjdXg2BguhYWW5FUvY1sQbknDpvfx8MTsPabyI=";
 
   src = hubsSrc.hubs;
 

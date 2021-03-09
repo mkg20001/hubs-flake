@@ -2,7 +2,7 @@
   description = "Mozilla Hubs Cloud";
 
   # inputs.nixpkgs.url = "github:happysalada/nixpkgs/fix_build_mix";
-  inputs.nixpkgs.url = "github:mkg20001/nixpkgs/r_fix_build_mix";
+  inputs.nixpkgs.url = "github:mkg20001/nixpkgs/fix_mix";
   inputs.nix-node-fod.url = "github:mkg20001/nix-node-fod/master";
 
   outputs = { self, nixpkgs, nix-node-fod }:
