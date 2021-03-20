@@ -52,8 +52,44 @@ in
 
   config = mkIf (cfg.enable) {
 
+    networking.firewall.allowedTCPPorts = [ 80 443 ];
+
+    networking.hosts."127.0.0.1" = [ cfg.domain ];
+
     services.nginx = mkIf (cfg.enableNginx) {
       enable = true;
+
+      recommendedTlsSettings = true;
+      recommendedOptimisation = true;
+      recommendedGzipSettings = true;
+      recommendedProxySettings = true;
+      enableReload = true;
+
+      virtualHosts = {
+        "${cfg.domain}" = mkMerge [
+          {
+            forceSSL = true;
+            enableACME = cfg.enableAcmeNginx;
+            locations."/" = {
+              proxyPass = "http://localhost:4544";
+              proxyWebsockets = true;
+            };
+            locations."/_assets/client/" = {
+              alias = pkgs.hubs.client + "/";
+            };
+            locations."/_assets/admin/" = {
+              alias = pkgs.hubs.client + "/";
+            };
+            locations."/_assets/spoke/" = {
+              alias = pkgs.spoke + "/";
+            };
+          }
+          (mkIf (!cfg.enableAcme) {
+            sslCertificate = "${cfg.workingDirectory}/cert-${cfg.domain}.pem";
+            sslCertificateKey = "${cfg.workingDirectory}/key-${cfg.domain}.pem";
+          })
+        ];
+      };
     };
 
     services.hubs.config = {
@@ -69,9 +105,9 @@ in
 
         "Elixir.RetWeb.Endpoint".https = {
           port = "4544";
-          # certfile
-          # cacertfile
-          # keyfile
+          certfile = if cfg.enableAcme then "" else "${cfg.workingDirectory}/cert-${cfg.domain}.pem";
+          cacertfile = if cfg.enableAcme then "" else "${cfg.workingDirectory}/cert-${cfg.domain}.pem";
+          keyfile = if cfg.enableAcme then "" else "${cfg.workingDirectory}/key-${cfg.domain}.pem";
         };
 
         "Elixir.RetWeb.Endpoint" = {
