@@ -146,7 +146,7 @@ in
       # TODO: setup reticulum db
 
       ensureUsers = [{
-        name = "hubs";
+        name = "root";
         ensurePermissions = { "DATABASE ret_production" = "ALL PRIVILEGES"; };
       }];
       ensureDatabases = [ "ret_production" ];
@@ -177,62 +177,102 @@ in
         # MY_VAR = "my_var";
       };
 
-script = ''
-export HOME="$RELEASE_TMP"
-export LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-export REPLACE_OS_VARS=true # Inlines OS vars into vm args
-export MIX_ENV=prod
+      script = ''
+        CONFIG=$(echo ${escapeShellArg configJSON})
 
-SECRET_DIR="$RELEASE_TMP/secret"
-RELEASE_CONFIG_DIR="$RELEASE_TMP/config"
+        export HOME="$RELEASE_TMP"
+        export LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+        export REPLACE_OS_VARS=true # Inlines OS vars into vm args
+        export MIX_ENV=prod
 
-CONFIG=$(echo ${escapeShellArg configJSON})
+        export RELEASE_CONFIG_DIR="$RELEASE_TMP/config"
+        export RELEASE_MUTABLE_DIR="$RELEASE_TMP/var"
 
-mkdir -p "$SECRET_DIR"
+        mkdir -p "$RELEASE_CONFIG_DIR"
+        mkdir -p "$RELEASE_MUTABLE_DIR"
 
-ulimit -a
+        # secret
 
-for sec in $(echo "$CONFIG" | grep -o "@@[a-zA-Z_][a-zA-Z_]*@@"); do
-  sec=''${sec//"@@"/""}
-  if [ ! -e "$SECRET_DIR/$sec" ]; then
-    dd if=/dev/urandom of=/dev/stdout count=64 bs=1 2>/dev/null | base64 -w 0 > "$SECRET_DIR/$sec"
-  fi
-  secv=$(cat "$SECRET_DIR/$sec")
-  CONFIG=''${CONFIG//"@@$sec@@"/"$secv"}
-done
+        SECRET_DIR="$RELEASE_TMP/secret"
+        mkdir -p "$SECRET_DIR"
 
-if [ ! -e "$RELEASE_TMP/.erlang.cookie" ]; then
-  dd if=/dev/urandom of=/dev/stdout count=64 bs=1 2>/dev/null | base64 -w 0 > "$RELEASE_TMP/.erlang.cookie"
-  chmod 0400 "$RELEASE_TMP/.erlang.cookie"
-fi
+        for sec in $(echo "$CONFIG" | grep -o "@@[a-zA-Z_][a-zA-Z_]*@@"); do
+          sec=''${sec//"@@"/""}
+          if [ ! -e "$SECRET_DIR/$sec" ]; then
+            dd if=/dev/urandom of=/dev/stdout count=64 bs=1 2>/dev/null | base64 -w 0 > "$SECRET_DIR/$sec"
+          fi
+          secv=$(cat "$SECRET_DIR/$sec")
+          CONFIG=''${CONFIG//"@@$sec@@"/"$secv"}
+        done
 
-rm -rf "$RELEASE_CONFIG_DIR"
-mkdir "$RELEASE_CONFIG_DIR"
-echo "$CONFIG" | ${pkgs.yj}/bin/yj -jt > "$RELEASE_CONFIG_DIR/config.toml"
+        if [ ! -e "$RELEASE_TMP/.erlang.cookie" ]; then
+          dd if=/dev/urandom of=/dev/stdout count=64 bs=1 2>/dev/null | base64 -w 0 > "$RELEASE_TMP/.erlang.cookie"
+          chmod 0400 "$RELEASE_TMP/.erlang.cookie"
+        fi
 
-export PATH=${lib.makeBinPath (with pkgs; [ gawk bash coreutils gnused gnugrep ])}
+        # config
 
-export NODE_NAME=$(echo "$HOSTNAME") # $(echo $HOSTNAME | sed "s|\\..+||g")
-export NODE_COOKIE="$NODE_NAME.cookie"
+        echo "$CONFIG" | ${pkgs.yj}/bin/yj -jt > "$RELEASE_CONFIG_DIR/config.toml"
 
-RELEASE_MUTABLE_DIR="$RELEASE_TMP/mutable" RELEASE_CONFIG_DIR="$RELEASE_TMP/config" ${reticulum}/bin/ret start
-'';
+        export NODE_NAME=$(echo "$HOSTNAME") # $(echo $HOSTNAME | sed "s|\\..+||g")
+        export NODE_COOKIE=$(cat "$RELEASE_TMP/.erlang.cookie")
+
+        START_ERL_DATA="$RELEASE_MUTABLE_DIR/start_erl.data"
+
+        if [ -f "$START_ERL_DATA" ]; then
+            rm "$START_ERL_DATA"
+        fi
+
+        ${reticulum}/bin/ret foreground
+      '';
+
       serviceConfig = {
-        Type = "exec";
-        User = "hubs";
-        DynamicUser = true;
+        # setup postgres database
+        ExecStartPre = let
+          preStartScript = pkgs.writeScript "reticulum-setup" ''
+            #!${pkgs.bash}/bin/bash
+
+            export PATH="$PATH:${pkgs.shadow.su}/bin"
+
+            su postgres -c "psql -c 'ALTER DATABASE ret_production OWNER TO root;'"
+            su postgres -c "psql -c 'ALTER USER root CREATEROLE;'"
+         '';
+        in
+          #!${}
+          "+${preStartScript}";
+
+        # Type = "exec";
+        # Type = "simple";
+
+        # TODO: is more secure but breaks stuff
+        # DynamicUser = true;
+        # User = "hubs";
         WorkingDirectory = cfg.workingDirectory;
+        # ReadWritePaths = "/var/reticulum";
         # Implied by DynamicUser, but just to emphasize due to RELEASE_TMP
-        PrivateTmp = true;
-        ExecStart = ''
-          ${reticulum}/bin/ret start
-        '';
-        ExecStop = ''
-          ${reticulum}/bin/ret stop
-        '';
-        ExecReload = ''
+        # PrivateTmp = true;
+
+        # LimitSTACK=1677721600000;
+        # fix failed to create thread
+        # TasksMax="infinity";
+        # TasksMax=100000;
+        # TaskMax=100000;
+        # NotifyAccess = "all";
+        # LimitNOFILE=655360;
+        /* ExecReload = ''
           ${reticulum}/bin/ret restart
-        '';
+        ''; */
+
+        # fix failed to create thread
+        LimitCORE = "infinity";
+        LimitNOFILE = "infinity";
+        LimitMEMLOCK = "infinity";
+        # fix failed to create thread
+        TasksMax = "infinity";
+        # fix env vars missing
+        # env -> cmd args -> 1/4 stack
+        # https://unix.stackexchange.com/a/45584/133535
+        LimitSTACK = "infinity";
       };
       unitConfig = {
         Restart = "on-failure";
@@ -249,6 +289,14 @@ RELEASE_MUTABLE_DIR="$RELEASE_TMP/mutable" RELEASE_CONFIG_DIR="$RELEASE_TMP/conf
     system.activationScripts.hubs = ''
       mkdir -p ${cfg.workingDirectory}
       chown hubs ${cfg.workingDirectory}
+
+      ${if !cfg.enableAcme then ''
+        # if we don't have letsencrypt enabled, we need to generate some snakeoil certs
+        if [ ! -e ${cfg.workingDirectory}/key-${cfg.domain}.pem ]; then
+          ${pkgs.openssl}/bin/openssl req -sha256 -x509 -newkey rsa:4096 -keyout ${cfg.workingDirectory}/key-${cfg.domain}.pem -out ${cfg.workingDirectory}/cert-${cfg.domain}.pem -days 365 -nodes -subj '/CN=${cfg.domain}'
+          chmod 777 ${cfg.workingDirectory}/key-${cfg.domain}.pem ${cfg.workingDirectory}/cert-${cfg.domain}.pem
+        fi
+      '' else ""}
     '';
 
     ids.gids.hubs = 330;
