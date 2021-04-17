@@ -14,7 +14,7 @@
 
       pkgs = forAllSystems (system: (import nixpkgs {
         inherit system;
-        overlays = [ self.overlay ];
+        overlays = self.overlays;
       }));
     in
 
@@ -26,13 +26,15 @@
       defaultPackage = forAllSystems (system: pkgs.${system}.reticulum);
 
       legacyPackages = forAllSystems (system: {
-        inherit (pkgs.${system}) janus reticulum hubs spoke yt-dl-api-server;
+        inherit (pkgs.${system}) janus reticulum hubs spoke yt-dl-api-server speelycaptor;
       });
 
       nixosModules.hubs = import ./modules/hubs.nix;
       nixosModules.janus = import ./modules/janus.nix;
       nixosModules.yt-dl-api-server = import ./modules/yt-dl-api-server.nix;
       nixosModules.speelycaptor = speelycaptor.nixosModules.speelycaptor;
+
+      allModules = builtins.attrValues self.nixosModules;
 
     };
 }

@@ -2,16 +2,14 @@
 
 with lib;
 
+# TODO: split up hubs and reticulum modules, so hubs configures reticulum and the others?
+
 let
   cfg = config.services.hubs;
   reticulum = pkgs.reticulum;
   configJSON = builtins.toJSON cfg.config;
 in
 {
-  imports = [
-    ./janus.nix
-  ];
-
   options = {
     services.hubs = {
       enable = mkEnableOption "Mozilla Hubs";
@@ -56,6 +54,18 @@ in
 
     networking.hosts."127.0.0.1" = [ cfg.domain ];
 
+    services.speelycaptor = {
+      enable = true;
+      port = 9292;
+      externalUrl = "https://${cfg.domain}/_/speely";
+    };
+
+    services.yt-dl-api-server = {
+      enable = true;
+      port = 9191;
+      numberProcesses = 4;
+    };
+
     services.nginx = mkIf (cfg.enableNginx) {
       enable = true;
 
@@ -78,10 +88,18 @@ in
               alias = pkgs.hubs.client + "/";
             };
             locations."/_assets/admin/" = {
-              alias = pkgs.hubs.client + "/";
+              alias = pkgs.hubs.admin + "/";
             };
             locations."/_assets/spoke/" = {
               alias = pkgs.spoke + "/";
+            };
+
+            # TODO: should we publically expose those or can we just use localhost internally?
+            locations."/_/yt-dl/" = {
+              proxyPass = "http://localhost:9191/";
+            };
+            locations."/_/speely/" = {
+              proxyPass = "http://localhost:9292/";
             };
           }
           (mkIf (!cfg.enableAcme) {
