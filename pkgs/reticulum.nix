@@ -1,6 +1,5 @@
 { stdenv
 , lib
-, nodejs-14_x
 , makeWrapper
 , hubsSrc
 , beam
@@ -8,21 +7,25 @@
 }:
 
 let
-  extraPath = [
-
-  ];
-in
-beam.packages.erlang.buildMix ({
-  name = "reticulum";
-  version = "unstable";
-
+  packages = beam.packagesWith beam.interpreters.erlang;
   src = hubsSrc.reticulum;
 
-  depsSha256 = "sha256-3EitmpmQWpZq4Fm3zkliHHXOfuGslTDWCopS7VNCX/0=";
+  pname = "reticulum";
+  version = "unstable";
+  mixEnv = "prod";
 
-  buildInputs = [
-    git
-  ];
+  mixDeps = packages.fetchMixDeps {
+    pname = "mix-deps-${pname}";
+    inherit src mixEnv version;
+    sha256 = "sha256-cfs1i5nCCnyhi82SFBO3m65pu4pxh6O9qd9VwoelnQI=";
+
+    MIX_ENV = "prod";
+  };
+
+in packages.mixRelease {
+  inherit src pname version mixEnv mixDeps;
+
+  MIX_ENV = "prod";
 
   postPatch = ''
     sed "s|hostname: \"localhost\"|socket_dir: \"/run/postgresql\"|g" -i config/prod.exs
@@ -41,15 +44,10 @@ beam.packages.erlang.buildMix ({
 
   installPhase = ''
     runHook preInstall
-    mix do compile --no-deps-check, distillery.release
+    mix do compile --no-deps-check, distillery.release --env prod
+    # MIX_ENV=prod mix distillery.release --no-deps-check
     mkdir -p $out
     cp -a _build/prod/rel/ret/* $out
     runHook postInstall
   '';
-
-  /* postBuild = ''
-    for bin in $out/bin/*; do
-      wrapProgram $bin --prefix PATH : ${lib.makeBinPath extraPath}
-    done
-  ''; */
-})
+}
