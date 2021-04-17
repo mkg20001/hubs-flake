@@ -104,7 +104,7 @@ in
 
 
         "Elixir.RetWeb.Endpoint".https = {
-          port = "4544";
+          port = 4544;
           certfile = if cfg.enableAcme then "" else "${cfg.workingDirectory}/cert-${cfg.domain}.pem";
           cacertfile = if cfg.enableAcme then "" else "${cfg.workingDirectory}/cert-${cfg.domain}.pem";
           keyfile = if cfg.enableAcme then "" else "${cfg.workingDirectory}/key-${cfg.domain}.pem";
@@ -288,17 +288,6 @@ in
         # Implied by DynamicUser, but just to emphasize due to RELEASE_TMP
         # PrivateTmp = true;
 
-        # LimitSTACK=1677721600000;
-        # fix failed to create thread
-        # TasksMax="infinity";
-        # TasksMax=100000;
-        # TaskMax=100000;
-        # NotifyAccess = "all";
-        # LimitNOFILE=655360;
-        /* ExecReload = ''
-          ${reticulum}/bin/ret restart
-        ''; */
-
         # fix failed to create thread
         LimitCORE = "infinity";
         LimitNOFILE = "infinity";
@@ -319,8 +308,6 @@ in
       # needed for disksup do have sh available
       path = [ pkgs.bash pkgs.gawk ];
     };
-
-    environment.systemPackages = [ reticulum ];
 
     system.activationScripts.hubs = ''
       mkdir -p ${cfg.workingDirectory}
