@@ -11,18 +11,25 @@
     let
       supportedSystems = [ "x86_64-linux" ];
       forAllSystems = f: nixpkgs.lib.genAttrs supportedSystems (system: f system);
+
+      pkgs = forAllSystems (system: (import nixpkgs {
+       inherit system;
+       overlays = [ self.overlay ];
+      }));
     in
 
     {
       overlay = import ./overlay.nix nix-node-fod;
 
-      defaultPackage = forAllSystems (system: (import nixpkgs {
-        inherit system;
-        overlays = [ self.overlay ];
-      }).reticulum);
+      defaultPackage = forAllSystems (system: pkgs.${system}.reticulum);
+
+      legacyPackages = forAllSystems (system: {
+        inherit (pkgs.${system}) janus reticulum hubs spoke yt-dl-api-server;
+      });
 
       nixosModules.hubs = import ./modules/hubs.nix;
       nixosModules.janus = import ./modules/janus.nix;
+      nixosModules.yt-dl-api-server = import ./modules/yt-dl-api-server.nix;
 
     };
 }
