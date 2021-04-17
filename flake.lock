@@ -16,13 +16,29 @@
         "type": "github"
       }
     },
+    "nix-node-package": {
+      "locked": {
+        "lastModified": 1614593211,
+        "narHash": "sha256-ILAiSTkL8FOGrG3SvI7oOCciZqY6XYaVsP6uIq+bV4c=",
+        "owner": "mkg20001",
+        "repo": "nix-node-package",
+        "rev": "89e18113a992c2882d6a312cc82ecc088d0081ce",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mkg20001",
+        "ref": "master",
+        "repo": "nix-node-package",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1618499499,
-        "narHash": "sha256-2DFWiEnI7JcgM3qKMTGEcq0VrsyutaYMDOCbCF7dDiA=",
+        "lastModified": 1618530127,
+        "narHash": "sha256-jQPk7XpabppYa+GIO5LVTtUFhHq/VqHhPggwIKhTCnQ=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "5268ee2ebacbc73875be42d71e60c2b5c1b5a1c7",
+        "rev": "294d1925af6462e55c76b49624b983036f0093b9",
         "type": "github"
       },
       "original": {
@@ -35,7 +51,30 @@
     "root": {
       "inputs": {
         "nix-node-fod": "nix-node-fod",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "speelycaptor": "speelycaptor"
+      }
+    },
+    "speelycaptor": {
+      "inputs": {
+        "nix-node-package": "nix-node-package",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1618671146,
+        "narHash": "sha256-85giiPeDxarBlf/XoIRxdLNVwxtmoUubxirysshpVtM=",
+        "owner": "mkg20001",
+        "repo": "speelycaptor-hapi",
+        "rev": "22c8ab54b7051a0f339a7a522905887d9647d0fb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mkg20001",
+        "ref": "master",
+        "repo": "speelycaptor-hapi",
+        "type": "github"
       }
     }
   },
