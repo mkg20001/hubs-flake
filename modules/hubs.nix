@@ -60,6 +60,11 @@ in
       externalUrl = "https://${cfg.domain}/_/speely";
     };
 
+    services.photomnemonic = {
+      enable = true;
+      port = 9393;
+    };
+
     services.yt-dl-api-server = {
       enable = true;
       port = 9191;
@@ -100,6 +105,9 @@ in
             };
             locations."/_/speely/" = {
               proxyPass = "http://localhost:9292/";
+            };
+            locations."/_/photo/" = {
+              proxyPass = "http://localhost:9393/";
             };
           }
           (mkIf (!cfg.enableAcme) {
