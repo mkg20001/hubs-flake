@@ -46,7 +46,7 @@ in
       serviceConfig = {
         Type = "simple";
         DynamicUser = true;
-        ExecStart = "${yt-dl-api-server}/bin/youtube-dl-api-server --host :: --port ${cfg.port} --number-processes ${cfg.numberProcesses}";
+        ExecStart = "${yt-dl-api-server}/bin/youtube-dl-api-server --host :: --port ${toString cfg.port} --number-processes ${toString cfg.numberProcesses}";
       };
     };
   };
