@@ -12,7 +12,7 @@ mkNodeFod {
   node = nodejs-14_x;
 
   useYarn = true;
-  depsHash = "sha256-mQ12kClQGvRrv2Pt/H+mzPUgZlhKnrRQRKUwna/gX3w=";
+  depsHash = "sha256-QTPD+dUVowJP4gpiWV/P5f1mtoRdTU0Qc/w4c82dhoE=";
 
   src = hubsSrc.spoke;
 
