@@ -14,15 +14,21 @@ let
   version = "unstable";
   mixEnv = "prod";
 
-  mixDeps = packages.fetchMixDeps {
+  mixFodDeps = packages.fetchMixDeps {
     pname = "mix-deps-${pname}";
     inherit src mixEnv version;
-    sha256 = "sha256-cfs1i5nCCnyhi82SFBO3m65pu4pxh6O9qd9VwoelnQI=";
+    sha256 = "sha256-U4G1rKN9rcqA5g6C41UmLM8Fn69xs/QPOpMNd6mzrJQ=";
 
     MIX_ENV = "prod";
   };
 
 in packages.mixRelease {
+  inherit src pname version mixEnv mixFodDeps;
+
+  MIX_ENV = "prod";
+}
+
+/* in packages.mixRelease {
   inherit src pname version mixEnv mixDeps;
 
   MIX_ENV = "prod";
@@ -50,4 +56,4 @@ in packages.mixRelease {
     cp -a _build/prod/rel/ret/* $out
     runHook postInstall
   '';
-}
+} */

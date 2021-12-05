@@ -11,6 +11,7 @@
 , libconfig
 , gengetopt
 , libogg
+, lksctp-tools
 }:
 
 stdenv.mkDerivation rec {
@@ -33,6 +34,7 @@ stdenv.mkDerivation rec {
     libconfig
     jansson
     libogg
+    lksctp-tools
   ];
 
   nativeBuildInputs = [

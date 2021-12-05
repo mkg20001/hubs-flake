@@ -85,7 +85,7 @@ in
 
       serviceConfig = {
         Type = "simple";
-        User = "janus";
+        # User = "janus";
         Restart = "on-abnormal";
         ExecStart = "${janus}/bin/janus -o -F /etc/janus";
         LimitNOFILE = 65536;
