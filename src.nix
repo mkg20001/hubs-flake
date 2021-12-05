@@ -24,7 +24,7 @@
     fetchSubmodules = true;
   };
   # nix-prefetch-github mozillareality youtube-dl-api-server --nix
-  yt-dl-api-server = fetchFromGitHub {
+  yt-dl-server = fetchFromGitHub {
     owner = "mozillareality";
     repo = "youtube-dl-api-server";
     rev = "8042ed2eba2adb0315af8880d0d53b8a7fe6ab7a";

@@ -24,6 +24,10 @@ in
       group = "hubs";
     };
 
+    services.hubs.dialog.config = {
+      # TODO: stuff
+    };
+
     systemd.services.hubs-dialog = with pkgs; {
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" ];

@@ -3,12 +3,12 @@
 with lib;
 
 let
-  cfg = config.services.yt-dl-api-server;
-  yt-dl-api-server = pkgs.hubs.yt-dl-api-server;
+  cfg = config.services.yt-dl-server;
+  yt-dl-server = pkgs.hubs.yt-dl-server;
 in
 {
   options = {
-    services.yt-dl-api-server = {
+    services.yt-dl-server = {
       enable = mkEnableOption "youtube-dl-api-server";
 
       port = mkOption {
@@ -36,7 +36,7 @@ in
       allowedTCPPorts = [ cfg.port ];
     };
 
-    systemd.services.yt-dl-api-server = with pkgs; {
+    systemd.services.yt-dl-server = with pkgs; {
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" ];
       requires = [ "network-online.target" ];
@@ -46,7 +46,7 @@ in
       serviceConfig = {
         Type = "simple";
         DynamicUser = true;
-        ExecStart = "${yt-dl-api-server}/bin/youtube-dl-api-server --host :: --port ${toString cfg.port} --number-processes ${toString cfg.numberProcesses}";
+        ExecStart = "${yt-dl-server}/bin/youtube-dl-server --host :: --port ${toString cfg.port} --number-processes ${toString cfg.numberProcesses}";
       };
     };
   };

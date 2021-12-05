@@ -1,13 +1,13 @@
 { stdenv
 , lib
-, mkNodeFod
+, mkNode
 , nodejs-16_x
 , hubsSrc
 , makeWrapper
 }:
 
 mkNode {
-  node = nodejs-16_x;
+  nodejs = nodejs-16_x;
   root = hubsSrc.dialog;
 } {
   nativeBuildInputs = [

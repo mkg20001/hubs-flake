@@ -67,7 +67,7 @@ in
       port = 9393;
     };
 
-    services.yt-dl-api-server = {
+    services.yt-dl-server = {
       enable = true;
       port = 9191;
       numberProcesses = 4;

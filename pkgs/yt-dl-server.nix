@@ -9,7 +9,7 @@ buildPythonPackage rec {
   pname = "youtube-dl-api-server";
   version = "unstable";
 
-  src = hubsSrc.yt-dl-api-server;
+  src = hubsSrc.yt-dl-server;
 
   propagatedBuildInputs = [
     youtube-dl
