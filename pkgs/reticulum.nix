@@ -13,19 +13,16 @@ let
   pname = "reticulum";
   version = "unstable";
   mixEnv = "prod";
+  MIX_ENV = mixEnv;
 
   mixFodDeps = packages.fetchMixDeps {
     pname = "mix-deps-${pname}";
-    inherit src mixEnv version;
+    inherit src mixEnv version MIX_ENV;
     sha256 = "sha256-U4G1rKN9rcqA5g6C41UmLM8Fn69xs/QPOpMNd6mzrJQ=";
-
-    MIX_ENV = "prod";
   };
 
 in packages.mixRelease {
-  inherit src pname version mixEnv mixFodDeps;
-
-  MIX_ENV = "prod";
+  inherit src pname version mixEnv mixFodDeps MIX_ENV;
 }
 
 /* in packages.mixRelease {

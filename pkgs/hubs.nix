@@ -1,7 +1,7 @@
 { stdenv
 , lib
 , mkNodeFod
-, nodejs-14_x
+, nodejs-16_x
 , hubsSrc
 }:
 
@@ -9,9 +9,9 @@ mkNodeFod {
   pname = "hubs";
   version = "unstable";
 
-  node = nodejs-14_x;
+  node = nodejs-16_x;
 
-  depsHash = "sha256-RjZdO1PCyQRu3Ot4O7P/3RONLi25XPGQFBCEWXLxdYY=";
+  depsHash = "sha256-AsSjCQxA8nI0Whq3JlsGZDKkm9o61ynG/XjXB1b3sqM=";
 
   src = hubsSrc.hubs;
 

@@ -7,7 +7,7 @@ with lib;
 
 let
   cfg = config.services.janus;
-  janus = pkgs.janus;
+  janus = pkgs.hubs.janus;
   jcfgStr = import ./jcfg-str.nix lib;
   combined = janus; # TODO: make derivation that combines plugins and janus
 in
@@ -25,8 +25,10 @@ in
 
   config = mkIf (cfg.enable) {
     users.users.janus = {
-      uid = config.ids.uids.janus;
+      isSystemUser = true;
+      group = "janus";
     };
+    users.groups.janus = {};
 
     environment.etc = mapAttrs' (key: value: nameValuePair ("janus/${key}.jcfg") ({
       text = jcfgStr value;
@@ -97,8 +99,5 @@ in
     };
 
     environment.systemPackages = [ janus ];
-
-    ids.gids.janus = 331;
-    ids.uids.janus = 331;
   };
 }

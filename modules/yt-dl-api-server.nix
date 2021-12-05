@@ -4,7 +4,7 @@ with lib;
 
 let
   cfg = config.services.yt-dl-api-server;
-  yt-dl-api-server = pkgs.yt-dl-api-server;
+  yt-dl-api-server = pkgs.hubs.yt-dl-api-server;
 in
 {
   options = {

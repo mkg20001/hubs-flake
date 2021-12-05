@@ -6,7 +6,8 @@ with lib;
 
 let
   cfg = config.services.hubs;
-  reticulum = pkgs.reticulum;
+  format = pkgs.formats.toml {};
+  reticulum = pkgs.hubs.reticulum;
   configJSON = builtins.toJSON cfg.config;
 in
 {
@@ -19,7 +20,8 @@ in
       };
 
       config = mkOption {
-        type = types.attrs;
+        description = "Hubs config";
+        type = format.type;
       };
 
       domain = mkOption {
@@ -71,6 +73,10 @@ in
       numberProcesses = 4;
     };
 
+    services.hubs.dialog = {
+      enable = true;
+    };
+
     services.nginx = mkIf (cfg.enableNginx) {
       enable = true;
 
@@ -90,13 +96,13 @@ in
               proxyWebsockets = true;
             };
             locations."/_assets/client/" = {
-              alias = pkgs.hubs.client + "/";
+              alias = pkgs.hubs.hubs.client + "/";
             };
             locations."/_assets/admin/" = {
-              alias = pkgs.hubs.admin + "/";
+              alias = pkgs.hubs.hubs.admin + "/";
             };
             locations."/_assets/spoke/" = {
-              alias = pkgs.spoke + "/";
+              alias = pkgs.hubs.spoke + "/";
             };
 
             # TODO: should we publically expose those or can we just use localhost internally?
@@ -220,8 +226,10 @@ in
     };
 
     users.users.hubs = {
-      uid = config.ids.uids.hubs;
+      isSystemUser = true;
+      group = "hubs";
     };
+    users.groups.hubs = {};
 
     systemd.services.reticulum = with pkgs; {
       wantedBy = [ "multi-user.target" ];
@@ -237,11 +245,11 @@ in
         # if you don't set it, it will default to /tmp
         RELEASE_TMP = cfg.workingDirectory;
         # MY_VAR = "my_var";
+
+        CONFIG = format.generate "config.toml" cfg.config;
       };
 
       script = ''
-        CONFIG=$(echo ${escapeShellArg configJSON})
-
         export HOME="$RELEASE_TMP"
         export LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
         export REPLACE_OS_VARS=true # Inlines OS vars into vm args
@@ -274,7 +282,9 @@ in
 
         # config
 
-        echo "$CONFIG" | ${pkgs.yj}/bin/yj -jt > "$RELEASE_CONFIG_DIR/config.toml"
+        cat "$CONFIG" > "$RELEASE_CONFIG_DIR/config.toml"
+        # echo "$CONFIG" | ''${pkgs.yj}/bin/yj -jt > "$RELEASE_CONFIG_DIR/config.toml"
+        # cat ''${./c.toml} > "$RELEASE_CONFIG_DIR/config.toml"
 
         export NODE_NAME=$(echo "$HOSTNAME") # $(echo $HOSTNAME | sed "s|\\..+||g")
         export NODE_COOKIE=$(cat "$RELEASE_TMP/.erlang.cookie")
@@ -332,7 +342,9 @@ in
         StartLimitInterval = 10;
       };
       # needed for disksup do have sh available
-      path = [ pkgs.bash pkgs.gawk ];
+      path = with pkgs; [
+        bash gawk
+      ];
     };
 
     system.activationScripts.hubs = ''
@@ -347,8 +359,5 @@ in
         fi
       '' else ""}
     '';
-
-    ids.gids.hubs = 330;
-    ids.uids.hubs = 330;
   };
 }
